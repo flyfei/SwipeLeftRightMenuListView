@@ -144,7 +144,7 @@ listView item slide to the left and right
  
  Found a bug：
  
- If you find a bug, please send an email to zhaotengf, thank you
+ If you find a bug, please tell me, thank you
  
  
  
