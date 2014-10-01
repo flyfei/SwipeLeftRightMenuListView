@@ -15,6 +15,12 @@ import android.widget.FrameLayout;
 
 /**
  * 
+ * @author baoyz
+ * @date 2014-8-23
+ * 
+ */
+/**
+ * 
  * @Title: SwipeMenuLayout.java
  * @Author: zhaotf
  * 
@@ -210,7 +216,8 @@ public class SwipeMenuLayout extends FrameLayout {
 			moveDirection = 0;
 			break;
 		case MotionEvent.ACTION_MOVE:
-			// 判断滑动方向
+			// Log.i("byz", "downX = " + mDownX + ", moveX = " + event.getX() +
+			// "  state:" + state + "  moveDirection：" + moveDirection);
 			if (event.getX() > mTrueDownX) {
 				moveDirection = MOVE_TO_RIGHT;
 			} else if (event.getX() < mTrueDownX) {
@@ -250,7 +257,7 @@ public class SwipeMenuLayout extends FrameLayout {
 	}
 
 	public boolean isOpen() {
-		return state == STATE_OPEN_RIGHT || state == STATE_OPEN_LEFT;
+		return isOpenLeft() || isOpenRight();
 	}
 
 	public boolean isOpenLeft() {
@@ -283,7 +290,7 @@ public class SwipeMenuLayout extends FrameLayout {
 	}
 
 	/**
-	 * 向左滑动（原来方法名swipe1）
+	 * 向左滑动
 	 * 
 	 * @param dis
 	 */
@@ -306,6 +313,7 @@ public class SwipeMenuLayout extends FrameLayout {
 		if (dis > mLeftMenuView.getWidth()) {
 			dis = mLeftMenuView.getWidth();
 		}
+
 		mLeftMenuView.layout(dis - mLeftMenuView.getWidth(), mLeftMenuView.getTop(), dis, mLeftMenuView.getBottom());
 		mContentView.layout(dis, mContentView.getTop(), mContentView.getWidth() + dis, getMeasuredHeight());
 		mRightMenuView.layout(mContentView.getWidth() + dis, mRightMenuView.getTop(), mContentView.getWidth() + mRightMenuView.getWidth() + dis,
@@ -358,9 +366,9 @@ public class SwipeMenuLayout extends FrameLayout {
 		state = STATE_OPEN_RIGHT;
 		int dis;
 		if (mContentView.getLeft() > 0) {
-			dis = -(mRightMenuView.getWidth() + mContentView.getLeft());
+			dis = -(mRightMenuView.getWidth() + Math.abs(mContentView.getLeft()));
 		} else {
-			dis = -(mRightMenuView.getWidth() - mContentView.getLeft());
+			dis = -(mRightMenuView.getWidth() - Math.abs(mContentView.getLeft()));
 		}
 		mOpenScroller.startScroll(mContentView.getLeft(), 0, dis, 0, 350);
 		postInvalidate();
@@ -373,9 +381,9 @@ public class SwipeMenuLayout extends FrameLayout {
 		state = STATE_OPEN_LEFT;
 		int dis;
 		if (mContentView.getLeft() > 0) {
-			dis = mLeftMenuView.getWidth() - mContentView.getLeft();
+			dis = mLeftMenuView.getWidth() - Math.abs(mContentView.getLeft());
 		} else {
-			dis = mLeftMenuView.getWidth() + mContentView.getLeft();
+			dis = mLeftMenuView.getWidth() + Math.abs(mContentView.getLeft());
 		}
 		mOpenScroller.startScroll(mContentView.getLeft(), 0, dis, 0, 350);
 		postInvalidate();
@@ -385,8 +393,13 @@ public class SwipeMenuLayout extends FrameLayout {
 		if (mCloseScroller.computeScrollOffset()) {
 			mCloseScroller.abortAnimation();
 		}
-		state = STATE_CLOSE;
-		swipe(0);
+		if (state == STATE_OPEN_RIGHT) {
+			state = STATE_CLOSE;
+			swipe(0);
+		} else if (state == STATE_OPEN_LEFT) {
+			state = STATE_CLOSE;
+			swipe(0);
+		}
 	}
 
 	public void openRightMenu() {
@@ -438,7 +451,7 @@ public class SwipeMenuLayout extends FrameLayout {
 	}
 
 	public void setRightMenuHeight(int measuredHeight) {
-		//Log.i("byz", "pos = " + position + ", height = " + measuredHeight);
+		// Log.i("byz", "pos = " + position + ", height = " + measuredHeight);
 		LayoutParams params = (LayoutParams) mRightMenuView.getLayoutParams();
 		if (params.height != measuredHeight) {
 			params.height = measuredHeight;
@@ -447,7 +460,7 @@ public class SwipeMenuLayout extends FrameLayout {
 	}
 
 	public void setLeftMenuHeight(int measuredHeight) {
-		//Log.i("byz", "pos = " + position + ", height = " + measuredHeight);
+		// Log.i("byz", "pos = " + position + ", height = " + measuredHeight);
 		LayoutParams params = (LayoutParams) mLeftMenuView.getLayoutParams();
 		if (params.height != measuredHeight) {
 			params.height = measuredHeight;
